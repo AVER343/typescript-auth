@@ -12,4 +12,8 @@ psql -U postgres  < ./src/db/sql/users.sql
 # psql -U postgres  < ./src/db/sql/user_otp.sql
 # psql -U postgres  < ./src/db/sql/send_email_type.sql
 # psql -U postgres  < ./src/db/sql/send_email.sql
+psql -U postgres  < ./src/db/sql/instructor_organization.sql
+psql -U postgres  < ./src/db/sql/classes.sql
+psql -U postgres  < ./src/db/sql/class_relationship.sql
+
 echo "Configured database"

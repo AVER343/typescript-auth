@@ -11,6 +11,6 @@ const HandleResponse=(res:Response,messages:string|ValidationError[],type:Respon
          return res.send({messages:messages.map((e:ValidationError)=>({message:e.msg,type}))})
       }
    }
-   return res.send({messages:[{message:messages,type}]})
+   return res.send({messages:[{message:messages||'Something went wrong !',type}]})
 }
 export default HandleResponse

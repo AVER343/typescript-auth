@@ -27,7 +27,9 @@ Signup.post('*/signup',
                 //user doesnt exist ,then save (creates new)
                 let new_user = new User(req.body)
                 await new_user.save()
-            return res.send(new_user)
+                new_user.deleteFields()
+                let JWT = await new_user.setJWT()
+            return res.cookie('JWT',JWT,{maxAge:120*60*1000}).send(new_user.getUser())
            }
            catch(e:any){
             return HandleResponse(res,e.message||'Something went wrong !','error')

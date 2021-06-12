@@ -15,9 +15,9 @@ class User{
         return this.user
     }
     static  async findOne(user:User_Interface){
-        let query=`SELECT username,created_time,id,modified_time FROM USERS `;
+        let query=`SELECT username,created_time,id,modified_time,role_type FROM USERS `;
         let args:string[]= []
-        let argumentsCanBeSearched= ['username'] // Add the keys that you want the unique columns for.
+        let argumentsCanBeSearched= ['username','id'] // Add the keys that you want the unique columns for.
         argumentsCanBeSearched.forEach((e)=>{
             if(hasKey(user,e))
             {
@@ -26,10 +26,10 @@ class User{
                     query = query + ' WHERE '
                 }
                 else{
-                    query = ' or '
+                    query =query + ' or '
                 }
                 args.push(hasKey(user,e))
-                query = query + (e).toString() +`= $${args.length}` ;
+                query = query + ` ${e} = $${args.length} ` ;
             }
         })
         query = query + ' LIMIT 1 ;'
@@ -48,10 +48,10 @@ class User{
             const user = await User.findOne(this.user)
             if(!user)
             {
-                this.createUser(this.user);
+                await this.createUser(this.user);
             }
             else{
-                this.updateUser(this.user)
+                await this.updateUser(this.user)
             }
        }
        catch(e:any){
@@ -60,7 +60,7 @@ class User{
     }
     public async deleteFields(){
         try{
-            let onlyFields = ['username','created_time','id']
+            let onlyFields = ['username','created_time','id','modified_time','role_type']
             let new_obj:any = {}
             onlyFields.forEach((e)=>{
                 new_obj[e]=hasKey(this.user,e)
@@ -75,8 +75,9 @@ class User{
        try{
             let encryptedPassword = await bcrypt.hash(user.password!,8)
             let saved_user = await User.pool.query(`INSERT INTO 
-                                                    USERS(username,password,created_time,modified_time) 
-                                                    VALUES($1,$2,now(),now()) returning *`,[user.username,encryptedPassword])
+                                                    USERS(username,password,created_time,modified_time,role_type) 
+                                                    VALUES($1,$2,now(),now(),$3) returning *`,
+                                                    [user.username,encryptedPassword,user.role_type||'student'])
             delete saved_user.rows[0]['password']
             this.user = (new User(saved_user.rows[0])).getUser()
        }
@@ -95,8 +96,7 @@ class User{
                                                 WHERE id = $1 
                                                 returning *`,[user.id,user.password])
 
-        delete updated_user.rows[0]['password']
-        this.user={}
+        this.deleteFields()
         this.user = (new User(updated_user.rows[0])).getUser()
     }
 }

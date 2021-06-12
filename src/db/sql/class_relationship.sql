@@ -1,0 +1,9 @@
+CREATE TABLE class_relationship(
+ id            SERIAL       PRIMARY KEY,
+USER_ID      BIGINT   NOT NULL, 
+CLASS_ID     BIGINT NOT NULL,
+generated_on  TIMESTAMP    DEFAULT now(),
+active_status    BOOLEAN      DEFAULT TRUE,
+FOREIGN KEY(USER_ID) REFERENCES USERS(id) ,
+FOREIGN KEY(CLASS_ID) REFERENCES CLASSES(id)
+);

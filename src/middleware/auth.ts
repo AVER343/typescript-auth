@@ -15,7 +15,7 @@ let authentication =async(req:any,res:any,next:any)=>{
             {
                 throw new Error('Verification failed . Please login again.')
             }
-        let user = await User.findOne({username:hasKey(verified_user,'username')})
+        let user = await User.findOne({username:hasKey(verified_user,'username'),id:hasKey(verified_user,'id')})
         if(!user)
             {
                 throw new Error('User does not exist !')
