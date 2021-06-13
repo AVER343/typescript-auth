@@ -13,7 +13,7 @@ const RouterConfig = express.Router()
 RouterConfig.all('/users/*',UserRouter)
 RouterConfig.all('/instructor/*',
                     authentication,    
-                    //authorization ,role based 
+                //authorization ,role based 
                     (req:any,res,next)=>{
                         if(!isAuthorized(['instructors'],req.user.role_type))
                         {

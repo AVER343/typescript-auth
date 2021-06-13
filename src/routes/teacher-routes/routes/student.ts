@@ -5,7 +5,7 @@ import Server from '../../../server'
 import HandleResponse from '../../../utils/handleResponse'
 import { hasKey } from '../../../utils/utisl'
 const Student= Router()
-Student.patch('*/students',
+Student.put('*/students',
             body('student_id').isNumeric().withMessage('Invalid student id !'),
             body('class_id').isNumeric().withMessage('Invalid class id !'),
             body('active_status').isNumeric().withMessage('Invalid active status !'),

@@ -57,7 +57,7 @@ Classes.post('*/classes',
             }
 })
 
-Classes.patch('*/classes',
+Classes.put('*/classes',
                 body('class_id')
                 .isNumeric()
                 .withMessage('Invalid class id !'),

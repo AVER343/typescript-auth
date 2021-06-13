@@ -35,7 +35,7 @@ Organization.post('*/orgs',
                       }
             return res.send({})
 })
-Organization.patch('*/orgs', 
+Organization.put('*/orgs', 
                     body('org_id')
                     .isNumeric()
                     .withMessage('Invalid organization id (org_id) !'),
