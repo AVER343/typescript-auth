@@ -9,7 +9,6 @@ Classes.get('*/classes',
                     let {class_id}= req.headers
                     let for_specific_class_id= ``
                     let args =[req.user.id]
-                    //todo get teacher details and total students
                     if(class_id)
                     {
                         for_specific_class_id = ` and C.id = $2 `
@@ -27,7 +26,7 @@ Classes.post('*/classes',
                 .withMessage('Invalid organization id !'),
                 body('class_name')
                 .isLength({min:1})
-                .withMessage('Invalid organization name !'),
+                .withMessage('Invalid class name !'),
             async (req:Request,res:Response)=>{
             try 
             {
@@ -77,7 +76,7 @@ Classes.patch('*/classes',
                 //adding a organization with user_id
                 let user    = hasKey(req,'user')
                 let user_id = hasKey(user,'id')
-                //todo if status = false ,change  relationship active between class-teacher and class-student
+                //todo(add check,done)  if status = false ,change  relationship active between class-teacher and class-student
                 let classes = await  Server.pool.query(`SELECT * FROM INSTRUCTOR_ORGANIZATION IG
                                                             JOIN CLASSES C ON C.org_id = IG.id
                                                             WHERE IG.user_id = $1 and C.id=$2
@@ -112,7 +111,6 @@ Classes.delete('*/classes',
                 let user    = hasKey(req,'user')
                 let user_id = hasKey(user,'id')
                 //todo if delete ,delete  relationship active between class-teacher and class-student
-
                 let classes = await  Server.pool.query(`SELECT * FROM INSTRUCTOR_ORGANIZATION IG
                                                             JOIN CLASSES C ON C.org_id = IG.id
                                                             WHERE IG.user_id = $1 and C.id=$2
@@ -122,8 +120,9 @@ Classes.delete('*/classes',
                     throw new Error('Unauthorized to make changes to the class !')
                 }
                 let class_ = await Server.pool.query
-                                        (`DELETE FROM CLASSES
-                                          WHERE id= $1 returning *;`,[class_id])
+                                        (`UPDATE CLASSES
+                                          SET class_active = false
+                                          WHERE id = $1 returning *;`,[class_id])
                 return res.send({class:class_.rows,user_id})
             } 
         catch (e:any) {

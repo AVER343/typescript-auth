@@ -43,7 +43,8 @@ Organization.patch('*/orgs',
                         .isBoolean()
                         .withMessage('Invalid actve status !'),
                     async (req:Request,res:Response)=>{
-                        //todo -> cascade and disable the classes related to org ,use transaction 
+                        //todo (done)-> cascade and disable the classes related to org ,use transaction 
+                    try{
                         let result = validationResult(req)
                         if(!result.isEmpty())
                         {
@@ -51,13 +52,23 @@ Organization.patch('*/orgs',
                         }
                         let user    = hasKey(req,'user')
                         let user_id = hasKey(user,'id')
-
-                     let updated_ogs =   await Server.pool.query
-                            (`UPDATE INSTRUCTOR_ORGANIZATION
-                               SET org_active = $3
-                              WHERE user_id=$1 and id=$2 returning *`,
-                              [user_id , req.body.org_id, req.body.org_active])
-                    return res.send(({updated_orgs:updated_ogs.rows}))
+                        await Server.pool.query('BEGIN')
+                        let updated_ogs =   await Server.pool.query
+                                (`UPDATE INSTRUCTOR_ORGANIZATION
+                                SET org_active = $3
+                                WHERE user_id=$1 and id=$2 returning *`,
+                                [user_id , req.body.org_id, req.body.org_active])
+                        let update_classes =   await Server.pool.query
+                                (`UPDATE CLASSES
+                                SET class_active = $2
+                                WHERE org_id = $1 returning *`,
+                                [req.body.org_id, req.body.org_active])
+                        await Server.pool.query('COMMIT')
+                        return res.send(({updated_orgs:updated_ogs.rows,update_classes:update_classes.rows}))
+                    }
+                    catch(e:any){
+                        return HandleResponse(res,e.message,'error')
+                    }
 })
 
 export default Organization

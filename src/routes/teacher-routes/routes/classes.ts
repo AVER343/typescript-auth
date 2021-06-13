@@ -7,11 +7,6 @@ import { hasKey } from '../../../utils/utisl'
 const Classes= Router()
 Classes.get('*/classes',
         async(req:Request,res:Response)=>{
-            // let result = validationResult(req)
-            // if(!result.isEmpty())
-            // {
-            //     return HandleResponse(res,result.array(),'error')
-            // }
             let class_id = hasKey(req.headers,'class_id')
             //adding a organization with user_id
             let user    = hasKey(req,'user')
@@ -24,7 +19,8 @@ Classes.get('*/classes',
                 class_= await Server.pool.query(`SELECT  C.class_id,COUNT(*) FROM class_relationship C
                                                  JOIN users u on C.user_id = u.id
                                                  WHERE user_id=$1
-                                                 and active_status = true and role_type='student'
+                                                 and active_status = true 
+                                                 and role_type='student'
                                                  group by C.class_id ;`,args)
             }
             else{
