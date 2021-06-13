@@ -45,6 +45,6 @@ RouterConfig.all('/student/*',
                     },  
                     StudentRouter)
 RouterConfig.all('*',(req:any,res,next)=>{
-    return HandleResponse(res,'Route not found !','error')
+    return HandleResponse(res,'Route not found !','error',404)
 })
 export default RouterConfig
